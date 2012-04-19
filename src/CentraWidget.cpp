@@ -1,4 +1,6 @@
 #include "CentralWidget.hpp"
+#include <QMessageBox>
+#include <QFileDialog>
 #include "tinyxml.h"
 CentralWidget::CentralWidget(MainWindow* ptr):_mainWindowPtr(ptr)
 {
@@ -11,6 +13,8 @@ CentralWidget::CentralWidget(MainWindow* ptr):_mainWindowPtr(ptr)
   _layout->addWidget(_texte,0,2);
   _nomFichier=new QLabel("Nom du fichier:");
   _layout->addWidget(_nomFichier,0,3);
+  _fileButton=new QPushButton("...");
+  _layout->addWidget(_fileButton,0,5);
   _nom=new QLineEdit;
   _layout->addWidget(_nom,0,4);
   _lien=new QLabel("Lien");
@@ -40,6 +44,7 @@ CentralWidget::CentralWidget(MainWindow* ptr):_mainWindowPtr(ptr)
   _layout->addWidget(_bouton,7,5);
   this->setLayout(_layout);
   QObject::connect(_bouton,SIGNAL(clicked()),this,SLOT(creerFichier()));
+  QObject::connect(_fileButton,SIGNAL(clicked()),this,SLOT(naviguer()));
 }
 
 CentralWidget::~CentralWidget()
@@ -47,6 +52,7 @@ CentralWidget::~CentralWidget()
   int i;
   delete _lien;
   delete _text;
+  delete _fileButton;
   delete _textBouton;
   delete _textEffect;
   delete _hpl;
@@ -61,6 +67,13 @@ CentralWidget::~CentralWidget()
       delete _hp[i];
     }
   delete _layout;
+}
+
+void CentralWidget::naviguer()
+{
+QString fichier = QFileDialog::getSaveFileName(this, "Enregistrer un fichier", QString(), "Niveau XML (*xml)");
+ QObject::connect(this,SIGNAL(setFileLocation(const QString &)),_nom,SLOT(setText(const QString &)));
+ emit setFileLocation(fichier);
 }
 
 void CentralWidget::creerFichier()
@@ -84,4 +97,5 @@ void CentralWidget::creerFichier()
       elem->InsertEndChild(choice);
     }
   doc.SaveFile(_nom->text().toStdString());
+  QMessageBox::information(this, "Sauver fichier", "Le fichier à été sauvé.");
 }

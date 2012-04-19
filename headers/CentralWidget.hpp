@@ -27,8 +27,12 @@ protected:
   QGridLayout* _layout;
   MainWindow* _mainWindowPtr;
   QPushButton* _bouton;
+  QPushButton* _fileButton;
 public slots:
   void creerFichier();
+  void naviguer();
+signals:
+  void setFileLocation(const QString &);
 public:
   CentralWidget(MainWindow* ptr);
   ~CentralWidget();
